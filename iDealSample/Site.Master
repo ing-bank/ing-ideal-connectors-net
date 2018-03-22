@@ -1,0 +1,29 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="ING.iDealSample.Site1" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>IAC - .NET</title>
+    <link rel="Stylesheet" href="styles.css" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <table border="0" width="100%">
+                <tr>
+                    <td width="120">
+                        <asp:HyperLink runat="server" NavigateUrl="~/Default.aspx"><img src="ideal_logo.gif" alt="" /></asp:HyperLink>
+                    </td>
+                    <td><span style="font: bold 24pt arial">Advanced Connector - .NET</span>
+                        <br />
+                        <span style="font: 18pt arial">**Test Page**</span></td>
+                </tr>
+            </table>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+</body>
+</html>
