@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-
+#if false
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
@@ -74,3 +74,4 @@ namespace ING.iDealAdvanced.Security
         }
     }
 }
+#endif

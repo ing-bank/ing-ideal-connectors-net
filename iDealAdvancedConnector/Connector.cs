@@ -156,10 +156,18 @@ namespace ING.iDealAdvanced
                     newMerchant.ClientCertificate = clientCertificate ?? Connector.GetCertificate(GetAppSetting("Privatecert"));
                     newMerchant.aquirerCertificate = acquirerCertificate ?? Connector.GetCertificate(GetAppSetting("Acquirercert"));
 
+
+#if false
                     var acquirerUrlConfig = acquirerUrl ?? ConfigurationManager.AppSettings["AcquirerURL"];
                     var acquirerDirectoryUrl = ConfigurationManager.AppSettings["AcquirerDirectoryURL"];
                     var acquirerTransactionUrl = ConfigurationManager.AppSettings["AcquirerTransactionURL"];
                     var acquirerTransactionStatusUrl = ConfigurationManager.AppSettings["AcquirerTransactionStatusURL"];
+#endif
+                    //TODO port me
+                    var acquirerUrlConfig = acquirerUrl ?? string.Empty;
+                    var acquirerDirectoryUrl = string.Empty;
+                    var acquirerTransactionUrl = string.Empty;
+                    var acquirerTransactionStatusUrl = string.Empty;
 
                     if (!String.IsNullOrEmpty(acquirerUrlConfig))
                     {
@@ -671,6 +679,9 @@ namespace ING.iDealAdvanced
         /// <exception cref="ConfigurationErrorsException">Number of certificates found is not exactly one.</exception>
         private static X509Certificate2 GetCertificate(string subjectOrThumbprint)
         {
+            return null;
+            //TODO port me 
+            #if false 
             WindowsImpersonationContext context = null;
 
             try
@@ -716,6 +727,7 @@ namespace ING.iDealAdvanced
                 if (context != null)
                     context.Undo();
             }
+            #endif
         }
 
 
@@ -758,7 +770,9 @@ namespace ING.iDealAdvanced
             {
                 if (traceSwitch.TraceError)
                 {
-                    string errMsg = Format("Error while reading private key: The key value is not an RSA or DSA key, or the key is unreadable. Current windows account: {0}, Original message: {1}", WindowsIdentity.GetCurrent().Name, ex.Message);
+                    //string errMsg = Format("Error while reading private key: The key value is not an RSA or DSA key, or the key is unreadable. Current windows account: {0}, Original message: {1}", WindowsIdentity.GetCurrent().Name, ex.Message);
+                    //TODO port me 
+                    string errMsg = Format("Error while reading private key: The key value is not an RSA or DSA key, or the key is unreadable. Original message: {0}", ex.Message);
                     TraceLine(errMsg);
                 }
                 throw;
@@ -869,12 +883,16 @@ namespace ING.iDealAdvanced
         /// <exception cref="ConfigurationErrorsException">Key does not exist.</exception>
         private static string GetAppSetting(string key)
         {
+            //TODO port me 
+            #if false
             string value = ConfigurationManager.AppSettings[key];
 
             if (String.IsNullOrEmpty(value))
                 throw new ConfigurationErrorsException(Format("Cannot find key in appSettings for \"{0}\", check your web.config file.", key));
 
             return value;
+            #endif
+            return string.Empty;
         }
 
 
@@ -886,7 +904,9 @@ namespace ING.iDealAdvanced
         /// <returns>Value as a string.</returns>
         private static string GetOptionalAppSetting(string key, string defaultValue)
         {
-            string value = ConfigurationManager.AppSettings[key];
+            //string value = ConfigurationManager.AppSettings[key];
+            //TODO port me 
+            string value = string.Empty;
 
             if (String.IsNullOrEmpty(value))
                 return defaultValue;
