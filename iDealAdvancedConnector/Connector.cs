@@ -307,8 +307,6 @@ namespace ING.iDealAdvanced
         {
             // Copy configuration from default configuration
             merchantConfig = (MerchantConfig)DefaultMerchantConfig(acquirerCertificate, clientCertificate, merchantId, merchantSubId, acquirerUrl).Clone();
-
-            Resources.Culture = CultureInfo.CurrentCulture;
         }
 
         /// <summary>
@@ -356,7 +354,8 @@ namespace ING.iDealAdvanced
             if (traceSwitch.TraceInfo) TraceLine("Response from get issuer list was : " + xmlResponse);
 
             // Check respons for errors
-            CheckError(xmlResponse, Resources.iDealUnavailable);
+            // String constant taken from Resources.resx: iDealUnavailable
+            CheckError(xmlResponse, "Betalen met iDEAL is nu niet mogelijk. Probeer het later nogmaals of betaal op een andere manier.");
 
             DirectoryRes response = (DirectoryRes)SerializationHelper.DeserializeObject<DirectoryRes>(xmlResponse);
 
@@ -442,7 +441,8 @@ namespace ING.iDealAdvanced
             if (traceSwitch.TraceInfo) TraceLine("Response from RequestTransaction() was : " + xmlRespons);
 
             // Check respons for errors
-            CheckError(xmlRespons, Resources.iDealUnavailable);
+            // String constant taken from Resources.resx: iDealUnavailable
+            CheckError(xmlRespons, "Betalen met iDEAL is nu niet mogelijk. Probeer het later nogmaals of betaal op een andere manier.");
 
             AcquirerTrxRes respons = (AcquirerTrxRes)SerializationHelper.DeserializeObject<AcquirerTrxRes>(xmlRespons);
 
@@ -519,7 +519,8 @@ namespace ING.iDealAdvanced
             if (traceSwitch.TraceInfo) TraceLine("Response from RequestTransactionStatus() was : " + xmlResponse);
 
             // Check respons for errors
-            CheckError(xmlResponse, Resources.iDealStatusCheckFailed);
+            //String constant taken from Resources.resx: iDealStatusCheckFailed
+            CheckError(xmlResponse, "Het resultaat van uw betaling is nog niet bij ons bekend. U kunt desgewenst uw betaling controleren in uw Internetbankieren.");
 
             AcquirerStatusRes response = (AcquirerStatusRes)SerializationHelper.DeserializeObject<AcquirerStatusRes>(xmlResponse);
 
