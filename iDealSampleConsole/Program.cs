@@ -1,45 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using ING.iDealAdvanced.Security;
 using ING.iDealAdvanced.XmlSignature;
 
 namespace iDealSampleConsole
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Method2();
+            Test();
         }
 
-        private static void Method2()
+        private static void Test()
         {
             Console.WriteLine("Press enter to start the test");
             Console.ReadLine();
             CryptoConfig.AddAlgorithm(typeof(RSAPKCS1SHA256SignatureDescription), "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
 
-            // Create a new XML document.
-            XmlDocument doc = new XmlDocument();
-            // Format the document to ignore white spaces.
-            doc.PreserveWhitespace = false;
+            // Create a new XML document and format to ignore white space
+            var doc = new XmlDocument { PreserveWhitespace = false };
+
             // Load the passed XML 
-            string my_xml = "<root><test>test</test></root>";
-            doc.LoadXml(my_xml);
+            const string xml = "<root><test>test</test></root>";
+            doc.LoadXml(xml);
 
-            ING.iDealAdvanced.Connector conn = new ING.iDealAdvanced.Connector();
+            var connector = new ING.iDealAdvanced.Connector();
 
-            X509Certificate2 cert = conn.ClientCertificate;
-            RSACryptoServiceProvider key = null;// conn.GetMerchantRSACryptoServiceProvider();
-
-            XmlSignature.Sign(ref doc, key, cert.Thumbprint);
+            var certificate = connector.ClientCertificate;
+            XmlSignature.Sign(ref doc, null, certificate.Thumbprint);
 
             Console.WriteLine(doc.OuterXml);
             Console.WriteLine("");

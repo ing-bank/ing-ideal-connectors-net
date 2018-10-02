@@ -4,3 +4,7 @@ iDealSample/obj
 iDealSample/bin
 iDealSampleConsole/obj
 iDealSampleConsole/bin
+*.suo
+../sqlite3/*
+.vs/*
+*.csproj.user
