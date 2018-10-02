@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Security
+namespace iDealAdvancedConnector.Security
 {
     /// <summary>
     ///     <para>

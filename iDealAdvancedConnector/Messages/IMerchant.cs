@@ -1,9 +1,9 @@
-﻿using System;
+﻿
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Messages
+namespace iDealAdvancedConnector.Messages
 {
     /// <summary>
     /// Merchant interface.

@@ -1,16 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Xml.Serialization;
-using System.Xml;
-using ING.iDealAdvanced.Messages;
+using iDealAdvancedConnector.Messages;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced
+namespace iDealAdvancedConnector
 {
     /// <summary>
     /// The serialization helper class.

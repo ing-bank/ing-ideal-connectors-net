@@ -2,8 +2,9 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
-using ING.iDealAdvanced.Security;
-using ING.iDealAdvanced.XmlSignature;
+using iDealAdvancedConnector;
+using iDealAdvancedConnector.Security;
+using iDealAdvancedConnector.XmlSignature;
 
 namespace iDealSampleConsole
 {
@@ -27,7 +28,7 @@ namespace iDealSampleConsole
             const string xml = "<root><test>test</test></root>";
             doc.LoadXml(xml);
 
-            var connector = new ING.iDealAdvanced.Connector();
+            var connector = new Connector();
 
             var certificate = connector.ClientCertificate;
             XmlSignature.Sign(ref doc, null, certificate.Thumbprint);

@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Data
+namespace iDealAdvancedConnector.Data
 {
     /// <summary>
     /// This class represents an iDeal issuer.

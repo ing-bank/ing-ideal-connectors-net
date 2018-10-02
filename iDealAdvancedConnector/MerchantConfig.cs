@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced
+namespace iDealAdvancedConnector
 {    
     /// <summary>
     /// This class holds the merchant configuration.

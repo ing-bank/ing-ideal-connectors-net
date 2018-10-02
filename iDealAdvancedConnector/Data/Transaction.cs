@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
-using ING.iDealAdvanced.Messages;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Data
+namespace iDealAdvancedConnector.Data
 {
     /// <summary>
     /// This class represents an iDEAL transaction.
@@ -196,7 +192,7 @@ namespace ING.iDealAdvanced.Data
         private static void ValidateString(string name, string text)
         {
             if (String.IsNullOrEmpty(text)) throw new ArgumentNullException(String.Format(System.Globalization.CultureInfo.CurrentCulture, "{0} cannot be empty or null.", name));
-            if (!Regex.IsMatch(text, Constants.stringPattern)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, "{0} contains one or more unsupported characters.", name));
+            if (!Regex.IsMatch(text, Messages.Constants.stringPattern)) throw new ArgumentException(String.Format(System.Globalization.CultureInfo.CurrentCulture, "{0} contains one or more unsupported characters.", name));
         }
     }
 }

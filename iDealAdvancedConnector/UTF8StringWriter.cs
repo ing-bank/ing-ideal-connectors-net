@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced
+namespace iDealAdvancedConnector
 {
     /// <summary>
     /// UTF8StringWriter class.

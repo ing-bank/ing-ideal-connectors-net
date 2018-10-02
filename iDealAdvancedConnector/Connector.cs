@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -8,18 +7,19 @@ using System.Net;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Schema;
-using ING.iDealAdvanced.Data;
-using ING.iDealAdvanced.Messages;
+using iDealAdvancedConnector.Constants;
+using iDealAdvancedConnector.Data;
+using iDealAdvancedConnector.Messages;
+using iDealAdvancedConnector.Security;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced
+namespace iDealAdvancedConnector
 {
     /// <summary>
     /// This is the iDEAL Connector class that encapsulates the communication with the iDEAL service.
@@ -568,7 +568,7 @@ namespace ING.iDealAdvanced
                 }
             }
 
-            xmlDoc.Schemas.Add(ING.iDealAdvanced.Security.XsdValidation.AllSchemas);
+            xmlDoc.Schemas.Add(XsdValidation.AllSchemas);
 
             xmlDoc.Validate(this.ValidationError);
 

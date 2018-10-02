@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Messages
+namespace iDealAdvancedConnector.Messages
 {
     /// <summary>
     /// This class represents an acquirer transaction request

@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-
-using ING.iDealAdvanced.Messages;
+using iDealAdvancedConnector.Messages;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Data
+namespace iDealAdvancedConnector.Data
 {
     /// <summary>
     /// This class contains the result of the GetIssuerList function of the Directory Protocol.

@@ -10,7 +10,7 @@ using System.Xml.Schema;
 /// ING.iDealAdvanced connector
 /// </summary>
 #pragma warning restore 1587
-namespace ING.iDealAdvanced.Security
+namespace iDealAdvancedConnector.Security
 {
     /// <summary>
     /// This class is used to store read iDealAdvanced schemas 
