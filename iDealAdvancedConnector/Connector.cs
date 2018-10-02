@@ -34,6 +34,8 @@ namespace iDealAdvancedConnector
     /// <exception cref="SecurityException">The iDEAL response signature is invalid.</exception>
     public partial class Connector
     {
+        private IDealConnectorOptions _idealConnectorOptions;
+
         #region Public Properties
 
         /// <summary>
@@ -132,11 +134,10 @@ namespace iDealAdvancedConnector
         /// <exception cref="UriFormatException">Url is not in correct format.</exception>
         /// <exception cref="InvalidCastException">Configuration setting has invalid format.</exception>
         /// <exception cref="ConfigurationErrorsException">Configuration setting is missing.</exception>
-        public Connector(X509Certificate2 acquirerCertificate = null, X509Certificate2 clientCertificate = null,
-            string merchantId = null, string merchantSubId = null, string acquirerUrl = null)
+        public Connector(IDealConnectorOptions idealConnectorOptions)
         {
-            // Copy configuration from default configuration
-            merchantConfig = (MerchantConfig)MerchantConfig.DefaultMerchantConfig(acquirerCertificate, clientCertificate, merchantId, merchantSubId, acquirerUrl).Clone();
+            _idealConnectorOptions = idealConnectorOptions;
+            merchantConfig = (MerchantConfig)MerchantConfig.DefaultMerchantConfig(_idealConnectorOptions).Clone();
         }
 
         /// <summary>
@@ -501,7 +502,7 @@ namespace iDealAdvancedConnector
 
             try
             {
-                var useCertificateWithEnhancedAESCryptoProvider = MerchantConfig.GetOptionalAppSetting("UseCertificateWithEnhancedAESCryptoProvider", "False");
+                var useCertificateWithEnhancedAESCryptoProvider = _idealConnectorOptions.UseCertificateWithEnhancedAESCryptoProvider;
                 if (useCertificateWithEnhancedAESCryptoProvider.ToLowerInvariant().Equals("true"))
                 {
                     rsa = (RSACryptoServiceProvider) merchantConfig.ClientCertificate.PrivateKey;
@@ -512,7 +513,7 @@ namespace iDealAdvancedConnector
 
                     // Change: Product Backlog Item 10248: .NET Connector - support loading certificate from machine key stores instead of user’s
                     // Use machine key store if this is specified in the configuration settings
-                    var useMachineKeyStore = MerchantConfig.GetOptionalAppSetting("UseCspMachineKeyStore", "False");
+                    var useMachineKeyStore = _idealConnectorOptions.UseCspMachineKeyStore;
                     if (useMachineKeyStore.ToLowerInvariant().Equals("true"))
                     {
                         cspParams.Flags = CspProviderFlags.UseMachineKeyStore;

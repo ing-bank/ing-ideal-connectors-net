@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using iDealAdvancedConnector;
 using iDealAdvancedConnector.Security;
 using iDealAdvancedConnector.XmlSignature;
+using Microsoft.Extensions.Configuration;
 
 namespace iDealSampleConsole
 {
@@ -12,10 +13,17 @@ namespace iDealSampleConsole
     {
         private static void Main(string[] args)
         {
-            Test();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            var configuration = builder.Build();
+            var idealConnectorOptions = new IDealConnectorOptions();
+            configuration.GetSection("IDealConnector").Bind(idealConnectorOptions);
+            Test(idealConnectorOptions);
         }
 
-        private static void Test()
+        private static void Test(IDealConnectorOptions idealConnectorOptions)
         {
             Console.WriteLine("Press enter to start the test");
             Console.ReadLine();
@@ -28,7 +36,7 @@ namespace iDealSampleConsole
             const string xml = "<root><test>test</test></root>";
             doc.LoadXml(xml);
 
-            var connector = new Connector();
+            var connector = new Connector(idealConnectorOptions);
 
             var certificate = connector.ClientCertificate;
             XmlSignature.Sign(ref doc, null, certificate.Thumbprint);

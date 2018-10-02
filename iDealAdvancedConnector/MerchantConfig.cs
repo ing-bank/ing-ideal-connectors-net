@@ -109,36 +109,28 @@ namespace iDealAdvancedConnector
         /// <exception cref="ConfigurationErrorsException">Configuration setting is missing.</exception>
         /// <exception cref="CryptographicException">Error getting certificate from the store.</exception>
         /// <exception cref="UriFormatException">Url is not in correct format.</exception>
-        public static MerchantConfig DefaultMerchantConfig(X509Certificate2 acquirerCertificate = null, X509Certificate2 clientCertificate = null,
-            string merchantId = null, string merchantSubId = null, string acquirerUrl = null)
+        public static MerchantConfig DefaultMerchantConfig(IDealConnectorOptions idealConnectorOptions)
         {          
             if (Connector.defaultMerchantConfig == null)
             {
                 MerchantConfig newMerchant = new MerchantConfig
                 {
-                    MerchantId = merchantId ?? GetAppSetting("MerchantID"),
-                    SubId = merchantSubId ?? GetAppSetting("SubID")
+                    MerchantId = idealConnectorOptions.MerchantId,
+                    SubId = idealConnectorOptions.SubId
                 };
             
-                String merchantReturnUrl = GetAppSetting("MerchantReturnURL");
+                String merchantReturnUrl = idealConnectorOptions.MerchantReturnURL;
                 if (!Uri.TryCreate(merchantReturnUrl, UriKind.Absolute, out newMerchant.merchantReturnUrl))
                     throw new UriFormatException("MerchantReturnURL is not in correct format.");
 
-                newMerchant.ClientCertificate = clientCertificate ?? GetCertificate(GetAppSetting("Privatecert"));
-                newMerchant.aquirerCertificate = acquirerCertificate ?? GetCertificate(GetAppSetting("Acquirercert"));
+                newMerchant.ClientCertificate = GetCertificate(idealConnectorOptions.ClientCertificate);
+                newMerchant.aquirerCertificate = GetCertificate(idealConnectorOptions.AcquirerCertificate);
 
+                var acquirerUrlConfig = idealConnectorOptions.AcquirerURL;
+                var acquirerDirectoryUrl = idealConnectorOptions.AcquirerDirectoryURL;
+                var acquirerTransactionUrl = idealConnectorOptions.AcquirerTransactionURL;
+                var acquirerTransactionStatusUrl = idealConnectorOptions.AcquirerTransactionStatusURL;
 
-#if false
-                var acquirerUrlConfig = acquirerUrl ?? ConfigurationManager.AppSettings["AcquirerURL"];
-                var acquirerDirectoryUrl = ConfigurationManager.AppSettings["AcquirerDirectoryURL"];
-                var acquirerTransactionUrl = ConfigurationManager.AppSettings["AcquirerTransactionURL"];
-                var acquirerTransactionStatusUrl = ConfigurationManager.AppSettings["AcquirerTransactionStatusURL"];
-#endif
-                //TODO port me
-                var acquirerUrlConfig = acquirerUrl ?? string.Empty;
-                var acquirerDirectoryUrl = string.Empty;
-                var acquirerTransactionUrl = string.Empty;
-                var acquirerTransactionStatusUrl = string.Empty;
 
                 if (!String.IsNullOrEmpty(acquirerUrlConfig))
                 {
@@ -166,11 +158,13 @@ namespace iDealAdvancedConnector
                     if (!Uri.TryCreate(acquirerTransactionStatusUrl, UriKind.Absolute, out newMerchant.acquirerUrlSTA)) throw new UriFormatException("AcquirerTransactionStatusURL is not in correct format.");
                 }
                 
-                string acquirerTimeout = GetAppSetting("AcquirerTimeout");
+                string acquirerTimeout = idealConnectorOptions.AcquirerTimeout;
                 if (!Int32.TryParse(acquirerTimeout, out newMerchant.acquirerTimeout))
                     throw new InvalidCastException("AcquirerTimeout is not in correct format.");
 
-                newMerchant.ExpirationPeriod = GetOptionalAppSetting("ExpirationPeriod", null);
+                newMerchant.ExpirationPeriod = string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod) 
+                        ? idealConnectorOptions.ExpirationPeriod 
+                        : null;
 
                 newMerchant.currency = "EUR";
                 newMerchant.language = "nl";
@@ -241,44 +235,6 @@ namespace iDealAdvancedConnector
                     context.Undo();
             }
             #endif
-        }
-
-        /// <summary>
-        /// Gets a value from the AppSettings.
-        /// </summary>
-        /// <param name="key">Key for the value to get.</param>
-        /// <returns>Value as a string.</returns>
-        /// <exception cref="ConfigurationErrorsException">Key does not exist.</exception>
-        private static string GetAppSetting(string key)
-        {
-            //TODO port me 
-            #if false
-            string value = ConfigurationManager.AppSettings[key];
-
-            if (String.IsNullOrEmpty(value))
-                throw new ConfigurationErrorsException(Format("Cannot find key in appSettings for \"{0}\", check your web.config file.", key));
-
-            return value;
-            #endif
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Gets an optional value from the AppSettings.
-        /// </summary>
-        /// <param name="key">Key for the value to get.</param>
-        /// <param name="defaultValue">Value to use if key is not available.</param>
-        /// <returns>Value as a string.</returns>
-        public static string GetOptionalAppSetting(string key, string defaultValue)
-        {
-            //string value = ConfigurationManager.AppSettings[key];
-            //TODO port me 
-            string value = string.Empty;
-
-            if (String.IsNullOrEmpty(value))
-                return defaultValue;
-
-            return value;
         }
     }
 }
