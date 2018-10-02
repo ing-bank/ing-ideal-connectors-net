@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -34,6 +35,7 @@ namespace iDealAdvancedConnector
     /// <exception cref="SecurityException">The iDEAL response signature is invalid.</exception>
     public partial class Connector
     {
+        private HttpClient _httpClient;
         private IDealConnectorOptions _idealConnectorOptions;
 
         #region Public Properties
@@ -126,16 +128,13 @@ namespace iDealAdvancedConnector
         /// <summary>
         /// Default constructor.
         /// </summary>
-        /// <param name="acquirerCertificate"><see cref="AcquirerCertificate" /> to be used, reverts to configuration if not set.</param>
-        /// <param name="clientCertificate"><see cref="ClientCertificate" /> to be used, reverts to configuration if not set.</param>
-        /// <param name="merchantId"></param>
-        /// <param name="merchantSubId"></param>
-        /// <param name="acquirerUrl"></param>
+        /// <param name="idealConnectorOptions"></param>
         /// <exception cref="UriFormatException">Url is not in correct format.</exception>
         /// <exception cref="InvalidCastException">Configuration setting has invalid format.</exception>
         /// <exception cref="ConfigurationErrorsException">Configuration setting is missing.</exception>
-        public Connector(IDealConnectorOptions idealConnectorOptions)
+        public Connector(HttpClient httpClient, IDealConnectorOptions idealConnectorOptions)
         {
+            _httpClient = httpClient;
             _idealConnectorOptions = idealConnectorOptions;
             merchantConfig = (MerchantConfig)MerchantConfig.DefaultMerchantConfig(_idealConnectorOptions).Clone();
         }
@@ -386,50 +385,24 @@ namespace iDealAdvancedConnector
         {
             if (traceSwitch.TraceInfo) TraceLine("Start of GetReplyFromAcquirer()");
             if (traceSwitch.TraceVerbose) TraceLine(Format("Parameters: request: {0}", request));
-
-            string reply = String.Empty;
+            var deserializedResponse = string.Empty;
 
             System.Text.Encoding encoding = new System.Text.UTF8Encoding(false);
 
             try
             {
-                Byte[] bytesToSend = encoding.GetBytes(request);
-
-                // Send the xml to remote server
-                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-
-#if RUNNING_ON_4_5
+                #if RUNNING_ON_4_5
                 // Bypass service certificate validation
                 var disableAcquirerSSLCertificateValidation = GetOptionalAppSetting("DisableAcquirerSSLCertificateValidation", "False");
                 if (disableAcquirerSSLCertificateValidation.ToLowerInvariant().Equals("true"))
                 {
                     httpWebRequest.ServerCertificateValidationCallback += DisableAcquirerSSLCertificateValidation;
                 }                            
-#endif
+                #endif
 
-                // Set timeout in milliseconds (ms)
-                httpWebRequest.Timeout = merchantConfig.acquirerTimeout * 1000;
-
-                // Do a HTTP POST, content is the xml message
-                httpWebRequest.Method = "POST";
-                httpWebRequest.ContentType =
-                    Format("text/xml; charset=\"{0}\"", encoding.WebName);
-                httpWebRequest.ContentLength = bytesToSend.Length;
-
-                using (Stream sendStream = httpWebRequest.GetRequestStream())
-                {
-                    sendStream.Write(bytesToSend, 0, bytesToSend.Length);
-                }
-
-                // Get the response from the server
-                WebResponse response = httpWebRequest.GetResponse();
-
-                // Create a readable stream
-                using (StreamReader sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-                {
-                    // Read in all the server answer
-                    reply = sr.ReadToEnd();
-                }
+                _httpClient.Timeout = TimeSpan.FromSeconds(merchantConfig.acquirerTimeout);
+                var response = _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml; charset=\"{0}\"")).Result;
+                deserializedResponse = response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
             {
@@ -440,8 +413,8 @@ namespace iDealAdvancedConnector
 
 
             if (traceSwitch.TraceInfo) TraceLine("End of GetReplyFromAcquirer()");
-            if (traceSwitch.TraceVerbose) TraceLine(Format("Returnvalue: {0}", reply));
-            return reply;
+            if (traceSwitch.TraceVerbose) TraceLine(Format("Returnvalue: {0}", deserializedResponse));
+            return deserializedResponse;
         }
 
 #if RUNNING_ON_4_5

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Xml;
 using iDealAdvancedConnector;
@@ -36,7 +37,7 @@ namespace iDealSampleConsole
             const string xml = "<root><test>test</test></root>";
             doc.LoadXml(xml);
 
-            var connector = new Connector(idealConnectorOptions);
+            var connector = new Connector(new HttpClient(), idealConnectorOptions);
 
             var certificate = connector.ClientCertificate;
             XmlSignature.Sign(ref doc, null, certificate.Thumbprint);
