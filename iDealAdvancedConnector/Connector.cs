@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using iDealAdvancedConnector.Constants;
@@ -148,7 +149,7 @@ namespace iDealAdvancedConnector
         /// <exception cref="ConfigurationErrorsException">Errors in configuration file.</exception>
         /// <exception cref="WebException">Error getting reply from acquirer.</exception>
         /// <exception cref="CryptographicException">Error using client certificate.</exception>
-        public Issuers GetIssuerList()
+        public async Task<Issuers> GetIssuerList()
         {
             if (traceSwitch.TraceInfo) TraceLine("Start of GetIssuerList()");
 
@@ -170,7 +171,7 @@ namespace iDealAdvancedConnector
             ValidateXML(xmlRequest);
 
             // Send request / get respons
-            string xmlResponse = GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlDIR);
+            string xmlResponse = await GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlDIR);
 
             // Validate respons
             ValidateXML(xmlResponse);
@@ -210,7 +211,7 @@ namespace iDealAdvancedConnector
         /// <exception cref="UriFormatException">Returned issuer authentication Url is in invalid format.</exception>
         /// <exception cref="WebException">Error getting reply from acquirer.</exception>
         /// <exception cref="CryptographicException">Error using client certificate.</exception>
-        public Transaction RequestTransaction(Transaction transaction)
+        public async Task<Transaction> RequestTransaction(Transaction transaction)
         {
             if (traceSwitch.TraceInfo) TraceLine("Start of RequestTransaction()");
             if (traceSwitch.TraceVerbose) TraceLine(Format("Parameters: transaction: {0}", transaction == null ? "NULL" : transaction.ToString()));
@@ -257,7 +258,7 @@ namespace iDealAdvancedConnector
             ValidateXML(xmlRequest);
 
             // Send request / get respons
-            string xmlRespons = GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlTRA);
+            string xmlRespons = await GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlTRA);
 
             // Validate respons
             ValidateXML(xmlRespons);
@@ -305,7 +306,7 @@ namespace iDealAdvancedConnector
         /// <exception cref="ConfigurationErrorsException">Errors in configuration file.</exception>
         /// <exception cref="WebException">Error getting reply from acquirer.</exception>
         /// <exception cref="CryptographicException">Error using client certificate.</exception>
-        public Transaction RequestTransactionStatus(string transactionId)
+        public async Task<Transaction> RequestTransactionStatus(string transactionId)
         {
             if (traceSwitch.TraceInfo) TraceLine("Start of RequestTransactionStatus()");
             if (traceSwitch.TraceVerbose) TraceLine(Format("Parameters: transactionId: {0}", transactionId == null ? "NULL" : transactionId));
@@ -335,7 +336,7 @@ namespace iDealAdvancedConnector
             ValidateXML(xmlRequest);
 
             // Send request / get respons
-            string xmlResponse = GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlSTA);
+            string xmlResponse = await GetReplyFromAcquirer(xmlRequest, merchantConfig.acquirerUrlSTA);
 
             // Validate respons
             ValidateXML(xmlResponse);
@@ -381,7 +382,7 @@ namespace iDealAdvancedConnector
         /// <param name="url">The url used to send the request</param>
         /// <returns>Reply from merchant acquirerUrl.</returns>
         /// <exception cref="WebException">Error getting reply from acquirer.</exception>
-        private string GetReplyFromAcquirer(string request, Uri url)
+        private async Task<string> GetReplyFromAcquirer(string request, Uri url)
         {
             if (traceSwitch.TraceInfo) TraceLine("Start of GetReplyFromAcquirer()");
             if (traceSwitch.TraceVerbose) TraceLine(Format("Parameters: request: {0}", request));
@@ -401,7 +402,7 @@ namespace iDealAdvancedConnector
                 #endif
 
                 _httpClient.Timeout = TimeSpan.FromSeconds(merchantConfig.acquirerTimeout);
-                var response = _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml; charset=\"{0}\"")).Result;
+                var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml; charset=\"{0}\""));
                 deserializedResponse = response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
