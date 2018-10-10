@@ -402,7 +402,8 @@ namespace iDealAdvancedConnector
                 #endif
 
                 _httpClient.Timeout = TimeSpan.FromSeconds(merchantConfig.acquirerTimeout);
-                var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml; charset=\"{0}\""));
+
+                var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml"));
                 deserializedResponse = response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
