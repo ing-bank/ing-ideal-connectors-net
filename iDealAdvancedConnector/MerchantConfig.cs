@@ -123,8 +123,8 @@ namespace iDealAdvancedConnector
                 if (!Uri.TryCreate(merchantReturnUrl, UriKind.Absolute, out newMerchant.merchantReturnUrl))
                     throw new UriFormatException("MerchantReturnURL is not in correct format.");
 
-                newMerchant.ClientCertificate = GetCertificate(idealConnectorOptions.ClientCertificate);
-                newMerchant.aquirerCertificate = GetCertificate(idealConnectorOptions.AcquirerCertificate);
+                newMerchant.ClientCertificate = GetCertificateFromBase64String(idealConnectorOptions.ClientCertificate, idealConnectorOptions.ClientCertificatePassword);
+                newMerchant.aquirerCertificate = GetCertificateFromBase64String(idealConnectorOptions.AcquirerCertificate);
 
                 var acquirerUrlConfig = idealConnectorOptions.AcquirerURL;
                 var acquirerDirectoryUrl = idealConnectorOptions.AcquirerDirectoryURL;
@@ -177,64 +177,25 @@ namespace iDealAdvancedConnector
             return Connector.defaultMerchantConfig;           
         }
 
-        /// <summary>
-        /// Gets an X509 certificate.
-        /// </summary>
-        /// <param name="subjectOrThumbprint">Subject or Thumbprint string for the certificate to get.</param>
-        /// <returns><see cref="X509Certificate2"/>.</returns>
-        /// <exception cref="CryptographicException">Error getting certificate from the store.</exception>
-        /// <exception cref="ConfigurationErrorsException">Number of certificates found is not exactly one.</exception>
-        private static X509Certificate2 GetCertificate(string subjectOrThumbprint)
+        static X509Certificate2 GetCertificateFromBase64String(string cert, string pwd = null)
         {
-            return null;
-            //TODO port me 
-            #if false 
-            WindowsImpersonationContext context = null;
-
             try
             {
-                // If the website is using impersonation use the configured Application Pool
-                // account to access the certificate store.
-                WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
-                if (windowsIdentity != null)
+                byte[] rawData = Convert.FromBase64String(cert);
+
+                if(!string.IsNullOrWhiteSpace(pwd))
                 {
-                    TokenImpersonationLevel impersonationLevel = windowsIdentity.ImpersonationLevel;
-
-                    if (impersonationLevel == TokenImpersonationLevel.Delegation || impersonationLevel == TokenImpersonationLevel.Impersonation)
-                    {
-                        context = WindowsIdentity.Impersonate(IntPtr.Zero);
-                    }
-                }                
-
-                X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-                store.Open(OpenFlags.ReadOnly);
-
-                // Change: Product Backlog Item 10247: .NET Connector - support loading certificate by Thumbprint
-                // By default find certificates using SubjectName
-                X509FindType findType = X509FindType.FindBySubjectName;
-
-                // Check to see if finding certificates by Thumbprint is activated in the configuration settings
-                var findCertificatesByThumbprint = GetOptionalAppSetting("FindCertificatesByThumbprint", "False");                                
-                if (findCertificatesByThumbprint.ToLowerInvariant().Equals("true"))
-                    findType = X509FindType.FindByThumbprint;
-                
-                X509Certificate2Collection certs = store.Certificates.Find(findType, subjectOrThumbprint, false);
-                if (certs.Count != 1)
-                {
-                    string errMsg = Format("Found {0} certificates by subject/thumbprint {1}, expected 1.", certs.Count, subjectOrThumbprint);
-                    if (traceSwitch.TraceError) TraceLine(errMsg);
-                    throw new ConfigurationErrorsException(errMsg);
+                    return new X509Certificate2(rawData, pwd);
                 }
-                store.Close();
-
-                return certs[0];
+                else
+                {
+                    return new X509Certificate2(rawData);
+                }
             }
-            finally
+            catch 
             {
-                if (context != null)
-                    context.Undo();
+                return null;
             }
-            #endif
         }
     }
 }
