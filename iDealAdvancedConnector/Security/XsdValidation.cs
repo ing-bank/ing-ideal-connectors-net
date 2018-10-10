@@ -18,7 +18,7 @@ namespace iDealAdvancedConnector.Security
     class XsdValidation
     {
         static XmlSchemaSet allSchemas;
-        static readonly String Namespace = "ING.iDealAdvanced.Messages.";
+        static readonly String Namespace = "iDealAdvancedConnector.Messages.";
 
         /// <summary>
         /// Static ctor
