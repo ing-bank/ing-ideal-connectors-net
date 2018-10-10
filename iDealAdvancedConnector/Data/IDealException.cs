@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Security.Permissions;
 using System.Runtime.Serialization;
-using System.Text;
-
-
-using ING.iDealAdvanced.Data;
-using ING.iDealAdvanced.Messages;
+using System.Security.Permissions;
+using iDealAdvancedConnector.Messages;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Data
+namespace iDealAdvancedConnector.Data
 {
     /// <summary>
     /// This class represents an iDEAL exception.

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using System.Text;
-using System.Xml;
-using System.Security.Cryptography.Xml;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using ING.iDealAdvanced.Security;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
+using System.Text.RegularExpressions;
+using System.Xml;
+using iDealAdvancedConnector.Constants;
+using iDealAdvancedConnector.Security;
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.XmlSignature
+namespace iDealAdvancedConnector.XmlSignature
 {
     /// <summary>
     /// XmlSignature class used to sign an xml document

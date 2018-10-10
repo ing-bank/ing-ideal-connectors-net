@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Messages
+namespace iDealAdvancedConnector.Messages
 {
     /// <summary>
     /// This class represents an acquirer status request merchant

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
+
 
 /// <summary>
 /// ING.iDealAdvanced connector
 /// </summary>
-namespace ING.iDealAdvanced.Messages
+namespace iDealAdvancedConnector.Messages
 {
     /// <summary>
     /// iDeal Connector constants
