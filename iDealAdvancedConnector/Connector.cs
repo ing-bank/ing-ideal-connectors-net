@@ -392,15 +392,6 @@ namespace iDealAdvancedConnector
 
             try
             {
-                #if RUNNING_ON_4_5
-                // Bypass service certificate validation
-                var disableAcquirerSSLCertificateValidation = GetOptionalAppSetting("DisableAcquirerSSLCertificateValidation", "False");
-                if (disableAcquirerSSLCertificateValidation.ToLowerInvariant().Equals("true"))
-                {
-                    httpWebRequest.ServerCertificateValidationCallback += DisableAcquirerSSLCertificateValidation;
-                }                            
-                #endif
-
                 _httpClient.Timeout = TimeSpan.FromSeconds(merchantConfig.acquirerTimeout);
 
                 var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml"));
@@ -418,16 +409,6 @@ namespace iDealAdvancedConnector
             if (traceSwitch.TraceVerbose) TraceLine(Format("Returnvalue: {0}", deserializedResponse));
             return deserializedResponse;
         }
-
-#if RUNNING_ON_4_5
-        /// <summary>
-        /// Disables the the acquirer's certificate validation
-        /// </summary>
-        private static bool DisableAcquirerSSLCertificateValidation(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
-        {
-            return true;
-        }
-#endif
 
         /// <summary>
         /// Creates a Merchant object.
