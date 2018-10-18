@@ -110,69 +110,66 @@ namespace iDealAdvancedConnector
         /// <exception cref="CryptographicException">Error getting certificate from the store.</exception>
         /// <exception cref="UriFormatException">Url is not in correct format.</exception>
         public static MerchantConfig DefaultMerchantConfig(IDealConnectorOptions idealConnectorOptions)
-        {          
-            if (Connector.defaultMerchantConfig == null)
+        {
+            MerchantConfig newMerchant = new MerchantConfig
             {
-                MerchantConfig newMerchant = new MerchantConfig
+                MerchantId = idealConnectorOptions.MerchantId,
+                SubId = idealConnectorOptions.SubId
+            };
+
+            String merchantReturnUrl = idealConnectorOptions.MerchantReturnURL;
+            if (!Uri.TryCreate(merchantReturnUrl, UriKind.Absolute, out newMerchant.merchantReturnUrl))
+                throw new UriFormatException("MerchantReturnURL is not in correct format.");
+
+            newMerchant.ClientCertificate = GetCertificateFromBase64String(idealConnectorOptions.ClientCertificate, idealConnectorOptions.ClientCertificatePassword);
+            newMerchant.aquirerCertificate = GetCertificateFromBase64String(idealConnectorOptions.AcquirerCertificate);
+
+            var acquirerUrlConfig = idealConnectorOptions.AcquirerURL;
+            var acquirerDirectoryUrl = idealConnectorOptions.AcquirerDirectoryURL;
+            var acquirerTransactionUrl = idealConnectorOptions.AcquirerTransactionURL;
+            var acquirerTransactionStatusUrl = idealConnectorOptions.AcquirerTransactionStatusURL;
+
+
+            if (!String.IsNullOrEmpty(acquirerUrlConfig))
+            {
+                //Check to see if other urls are given.
+
+                if (!String.IsNullOrEmpty(acquirerDirectoryUrl) ||
+                    !String.IsNullOrEmpty(acquirerTransactionUrl) ||
+                    !String.IsNullOrEmpty(acquirerTransactionStatusUrl))
                 {
-                    MerchantId = idealConnectorOptions.MerchantId,
-                    SubId = idealConnectorOptions.SubId
-                };
-            
-                String merchantReturnUrl = idealConnectorOptions.MerchantReturnURL;
-                if (!Uri.TryCreate(merchantReturnUrl, UriKind.Absolute, out newMerchant.merchantReturnUrl))
-                    throw new UriFormatException("MerchantReturnURL is not in correct format.");
-
-                newMerchant.ClientCertificate = GetCertificateFromBase64String(idealConnectorOptions.ClientCertificate, idealConnectorOptions.ClientCertificatePassword);
-                newMerchant.aquirerCertificate = GetCertificateFromBase64String(idealConnectorOptions.AcquirerCertificate);
-
-                var acquirerUrlConfig = idealConnectorOptions.AcquirerURL;
-                var acquirerDirectoryUrl = idealConnectorOptions.AcquirerDirectoryURL;
-                var acquirerTransactionUrl = idealConnectorOptions.AcquirerTransactionURL;
-                var acquirerTransactionStatusUrl = idealConnectorOptions.AcquirerTransactionStatusURL;
-
-
-                if (!String.IsNullOrEmpty(acquirerUrlConfig))
-                {
-                    //Check to see if other urls are given.
-
-                    if (!String.IsNullOrEmpty(acquirerDirectoryUrl) ||
-                        !String.IsNullOrEmpty(acquirerTransactionUrl) ||
-                        !String.IsNullOrEmpty(acquirerTransactionStatusUrl))
-                    {
-                        throw new NotSupportedException("When acquirerURL is given then other URLs should not be supplied");
-                    }
-
-                    //We have acquirerURL. Use this url for all innner urls.
-                    if (!Uri.TryCreate(acquirerUrlConfig, UriKind.Absolute, out newMerchant.acquirerURL)) throw new UriFormatException("AcquirerURL is not in correct format.");
-
-                    newMerchant.acquirerUrlDIR = newMerchant.acquirerURL;
-                    newMerchant.acquirerUrlTRA = newMerchant.acquirerURL;
-                    newMerchant.acquirerUrlSTA = newMerchant.acquirerURL;
+                    throw new NotSupportedException("When acquirerURL is given then other URLs should not be supplied");
                 }
-                else
-                {
-                    //Acquirer URL is not supplied. Try to get specific acquirer URLs
-                    if (!Uri.TryCreate(acquirerDirectoryUrl, UriKind.Absolute, out newMerchant.acquirerUrlDIR)) throw new UriFormatException("AcquirerDirectoryURL is not in correct format.");
-                    if (!Uri.TryCreate(acquirerTransactionUrl, UriKind.Absolute, out newMerchant.acquirerUrlTRA)) throw new UriFormatException("AcquirerTransactionURL is not in correct format.");
-                    if (!Uri.TryCreate(acquirerTransactionStatusUrl, UriKind.Absolute, out newMerchant.acquirerUrlSTA)) throw new UriFormatException("AcquirerTransactionStatusURL is not in correct format.");
-                }
-                
-                string acquirerTimeout = idealConnectorOptions.AcquirerTimeout;
-                if (!Int32.TryParse(acquirerTimeout, out newMerchant.acquirerTimeout))
-                    throw new InvalidCastException("AcquirerTimeout is not in correct format.");
 
-                newMerchant.ExpirationPeriod = string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod) 
-                        ? idealConnectorOptions.ExpirationPeriod 
-                        : null;
+                //We have acquirerURL. Use this url for all innner urls.
+                if (!Uri.TryCreate(acquirerUrlConfig, UriKind.Absolute, out newMerchant.acquirerURL)) throw new UriFormatException("AcquirerURL is not in correct format.");
 
-                newMerchant.currency = "EUR";
-                newMerchant.language = "nl";
-
-                XmlSignature.XmlSignature.RegisterSignatureAlghorighm();
-
-                Connector.defaultMerchantConfig = newMerchant;
+                newMerchant.acquirerUrlDIR = newMerchant.acquirerURL;
+                newMerchant.acquirerUrlTRA = newMerchant.acquirerURL;
+                newMerchant.acquirerUrlSTA = newMerchant.acquirerURL;
             }
+            else
+            {
+                //Acquirer URL is not supplied. Try to get specific acquirer URLs
+                if (!Uri.TryCreate(acquirerDirectoryUrl, UriKind.Absolute, out newMerchant.acquirerUrlDIR)) throw new UriFormatException("AcquirerDirectoryURL is not in correct format.");
+                if (!Uri.TryCreate(acquirerTransactionUrl, UriKind.Absolute, out newMerchant.acquirerUrlTRA)) throw new UriFormatException("AcquirerTransactionURL is not in correct format.");
+                if (!Uri.TryCreate(acquirerTransactionStatusUrl, UriKind.Absolute, out newMerchant.acquirerUrlSTA)) throw new UriFormatException("AcquirerTransactionStatusURL is not in correct format.");
+            }
+
+            string acquirerTimeout = idealConnectorOptions.AcquirerTimeout;
+            if (!Int32.TryParse(acquirerTimeout, out newMerchant.acquirerTimeout))
+                throw new InvalidCastException("AcquirerTimeout is not in correct format.");
+
+            newMerchant.ExpirationPeriod = string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod)
+                    ? idealConnectorOptions.ExpirationPeriod
+                    : null;
+
+            newMerchant.currency = "EUR";
+            newMerchant.language = "nl";
+
+            XmlSignature.XmlSignature.RegisterSignatureAlghorighm();
+
+            Connector.defaultMerchantConfig = newMerchant;
 
             return Connector.defaultMerchantConfig;           
         }
