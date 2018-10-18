@@ -392,18 +392,10 @@ namespace iDealAdvancedConnector
 
             try
             {
-                #if RUNNING_ON_4_5
-                // Bypass service certificate validation
-                var disableAcquirerSSLCertificateValidation = GetOptionalAppSetting("DisableAcquirerSSLCertificateValidation", "False");
-                if (disableAcquirerSSLCertificateValidation.ToLowerInvariant().Equals("true"))
-                {
-                    httpWebRequest.ServerCertificateValidationCallback += DisableAcquirerSSLCertificateValidation;
-                }                            
-                #endif
-
                 _httpClient.Timeout = TimeSpan.FromSeconds(merchantConfig.acquirerTimeout);
-                var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml; charset=\"{0}\""));
-                deserializedResponse = response.Content.ReadAsStringAsync().Result;
+
+                var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "text/xml"));
+                deserializedResponse = await response.Content.ReadAsStringAsync();
             }
             catch (Exception e)
             {
@@ -417,16 +409,6 @@ namespace iDealAdvancedConnector
             if (traceSwitch.TraceVerbose) TraceLine(Format("Returnvalue: {0}", deserializedResponse));
             return deserializedResponse;
         }
-
-#if RUNNING_ON_4_5
-        /// <summary>
-        /// Disables the the acquirer's certificate validation
-        /// </summary>
-        private static bool DisableAcquirerSSLCertificateValidation(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
-        {
-            return true;
-        }
-#endif
 
         /// <summary>
         /// Creates a Merchant object.
@@ -466,56 +448,12 @@ namespace iDealAdvancedConnector
             return request;
         }
 
-        /// <summary>
-        /// Gets the merchant crypto service provider.
-        /// </summary>
-        /// <returns></returns>
-        private RSACryptoServiceProvider GetMerchantRSACryptoServiceProvider()
+        private RSA GetMerchantRSACryptoServiceProvider()
         {
-            RSACryptoServiceProvider rsa = null;
-
-            try
-            {
-                var useCertificateWithEnhancedAESCryptoProvider = _idealConnectorOptions.UseCertificateWithEnhancedAESCryptoProvider;
-                if (useCertificateWithEnhancedAESCryptoProvider.ToLowerInvariant().Equals("true"))
-                {
-                    rsa = (RSACryptoServiceProvider) merchantConfig.ClientCertificate.PrivateKey;
-                }
-                else
-                {
-                    var cspParams = new CspParameters(24) {KeyContainerName = "XML_DSIG_RSA_KEY"};
-
-                    // Change: Product Backlog Item 10248: .NET Connector - support loading certificate from machine key stores instead of user’s
-                    // Use machine key store if this is specified in the configuration settings
-                    var useMachineKeyStore = _idealConnectorOptions.UseCspMachineKeyStore;
-                    if (useMachineKeyStore.ToLowerInvariant().Equals("true"))
-                    {
-                        cspParams.Flags = CspProviderFlags.UseMachineKeyStore;
-                    }
-
-                    rsa = new RSACryptoServiceProvider(cspParams);
-
-                    //The following line may fail if PrivateKey throws an Exception
-                    //If the exception is "keyset not found" then check if the hosted website runs on IIS impersonation level
-                    //Go to the certificate and manage private keys and add read access to the website application pool.
-                    rsa.FromXmlString(merchantConfig.ClientCertificate.PrivateKey.ToXmlString(true));
-                }
-            }
-            catch (CryptographicException ex)
-            {
-                if (traceSwitch.TraceError)
-                {
-                    //string errMsg = Format("Error while reading private key: The key value is not an RSA or DSA key, or the key is unreadable. Current windows account: {0}, Original message: {1}", WindowsIdentity.GetCurrent().Name, ex.Message);
-                    //TODO port me 
-                    string errMsg = Format("Error while reading private key: The key value is not an RSA or DSA key, or the key is unreadable. Original message: {0}", ex.Message);
-                    TraceLine(errMsg);
-                }
-                throw;
-            }
-
-            return rsa;
+            //We shouldn't call ClientCertificate.PrivateKey directly but use GetRSAPrivateKey()
+            //https://github.com/dotnet/corefx/issues/26682
+            return merchantConfig.ClientCertificate.GetRSAPrivateKey();
         }
-
 
         /// <summary>
         /// Validates Xml against the schema.
