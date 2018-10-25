@@ -160,7 +160,7 @@ namespace iDealAdvancedConnector
             if (!Int32.TryParse(acquirerTimeout, out newMerchant.acquirerTimeout))
                 throw new InvalidCastException("AcquirerTimeout is not in correct format.");
 
-            newMerchant.ExpirationPeriod = string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod)
+            newMerchant.ExpirationPeriod = !string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod)
                     ? idealConnectorOptions.ExpirationPeriod
                     : null;
 
