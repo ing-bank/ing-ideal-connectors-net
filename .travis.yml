@@ -22,6 +22,8 @@ git:
 notifications:
   slack:
     secure: "yfhiW+Tw9moeEXug2LPEmbLVFqVLhesHWSW6/hCH27wQ/6/BzICVr75egIKz7Ybwlqb+6AcOZwVJoeoSC0FD7dkxgKTCoXpa1bv2L/yQgk4caVuq7wl+4F6CTWdYuEBnFqCpu0havD2RNuVB17fKv0znoP3lOJoNZCFBaHeCZ7jW05uGK4wWdqYVn5o+XkERs0BDoPK5DF817Y0pNL4D0qJmjN01Iibkda9eu4cN2TxPCh5c0nGCBkervVL6r663aj6lSoB7SX3aq3GsswcCn5mCIxg9dn5o1OJOt4rJu7Dh1TBDpZTriVPWAazhTd/hMHUpYjN4K62eOxS1SQCNA5pD6rCOx+iizhDOmm/GAPK822qMZzeYZW3rY+jXmRW/f9HWCIqNYur8whB5rI5KvPP/Y1jU2vyQxdWudamktxLZSg/mxOO7X8rg7KtNYkv34Sq7KhrGBrBEmoecvOUJhLilHY3cEfLqkxUnUCtRtCeLfOC1auFjxfk3ECiZL6b5w3lBCkHsoYN7Pibh31ejy6F6+cuaOiJl8M2dv0+cQlrNdfUT/jyRHqEfxL2+T23f9EUo0Yu2cEbvok/0cdbP2m+Jozeqn+sAil9/AePYdH4UA946WOOhy0K2qVTN8jEtzz05u2qDbFFR+7Zuo+Gnmq3dUsIYa88AWsRu0XeHzoc="
+    on_success: change
+    on_failure: always
   email: false
 env:
   # Environment variables - NUGET_API_KEY and NUGET_API_URL

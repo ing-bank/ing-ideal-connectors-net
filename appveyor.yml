@@ -1,4 +1,3 @@
-# common configuration for ALL branches
 image: Visual Studio 2017
 test: off
 cache:
@@ -9,3 +8,11 @@ build_script:
 
 artifacts:
   - path: 'artifacts\*.nupkg'
+
+notifications:
+  - provider: Slack
+    incoming_webhook:
+      secure: RnB921N0BobZCGc3kqxia5ttdkLGyDttxrnTrWcyUzjZrsXnsvyLYVy1cxwszb2yDnrX4WT2FCEF2Vz4teksx8phJ7eDxo+5BnxsQJGLGnA=
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: true
