@@ -118,8 +118,6 @@ namespace iDealAdvancedConnector
 
         #endregion Public Properties
 
-        internal static MerchantConfig defaultMerchantConfig;
-
         private MerchantConfig merchantConfig;
 
         private static TraceSwitch traceSwitch = new TraceSwitch("iDealConnector", String.Empty);
@@ -137,7 +135,7 @@ namespace iDealAdvancedConnector
         {
             _httpClient = httpClient;
             _idealConnectorOptions = idealConnectorOptions;
-            merchantConfig = (MerchantConfig)MerchantConfig.DefaultMerchantConfig(_idealConnectorOptions).Clone();
+            merchantConfig = MerchantConfig.FromOptions(_idealConnectorOptions);
         }
 
         /// <summary>
