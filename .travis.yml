@@ -3,11 +3,20 @@ language: false
 services:
 - docker
 
+
+# For pull requests (merge) GitVersion errors with the error:
+# It looks like the branch being examined is a detached Head pointing to commit '90769ab'. 
+# Without a proper branch name GitVersion cannot determine the build version.
+
+# As a workaround we set the branch name by checking out to /pull/$TRAVES_PULL_REQUEST
+
 before_script:
   - '[ "$TRAVIS_PULL_REQUEST" = "false" ] || [ -z "$TRAVIS_PULL_REQUEST" ] || git checkout -b pull/${TRAVIS_PULL_REQUEST}'
 
 script:
 - chmod +x build.sh && docker run -it --env-file <(env | grep -E "TRAVIS|NUGET") -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/src danielmunchcko/dotnet:2.1.402 ./build.sh -t "Deploy"
+
+# Travis always does a shallow clone by default limited to 50 commits which breaks GitVersion
 git:
   depth: false
 notifications:
