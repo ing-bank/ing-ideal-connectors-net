@@ -9,7 +9,7 @@ namespace iDealAdvancedConnector
     /// <summary>
     /// This class holds the merchant configuration.
     /// </summary>
-    internal class MerchantConfig : ICloneable
+    internal class MerchantConfig
     {
         /// <summary>
         /// The MerchantID
@@ -76,40 +76,15 @@ namespace iDealAdvancedConnector
         /// </summary>
         public string language;
 
-        /// <summary>
-        /// Clones the current object
-        /// </summary>
-        /// <returns></returns>
-        public object Clone()
-        {
-            MerchantConfig merchantConfig = new MerchantConfig
-            {
-                MerchantId = this.MerchantId,
-                SubId = this.SubId,
-                merchantReturnUrl = this.merchantReturnUrl,
-                ClientCertificate = this.ClientCertificate,
-                aquirerCertificate = this.aquirerCertificate,
-                acquirerURL = this.acquirerURL,
-                acquirerUrlDIR = this.acquirerUrlDIR,
-                acquirerUrlTRA = this.acquirerUrlTRA,
-                acquirerUrlSTA = this.acquirerUrlSTA,
-                acquirerTimeout = this.acquirerTimeout,
-                ExpirationPeriod = this.ExpirationPeriod,
-                currency = this.currency,
-                language = this.language
-            };
-
-            return merchantConfig;
-        }
 
         /// <summary>
-        /// Gets the default merchant config.
+        /// Creates a new instance of MerchantConfig from given iDealConnectorOptions
         /// </summary>
         /// <exception cref="InvalidCastException">Configuration setting has invalid format.</exception>
         /// <exception cref="ConfigurationErrorsException">Configuration setting is missing.</exception>
         /// <exception cref="CryptographicException">Error getting certificate from the store.</exception>
         /// <exception cref="UriFormatException">Url is not in correct format.</exception>
-        public static MerchantConfig DefaultMerchantConfig(IDealConnectorOptions idealConnectorOptions)
+        public static MerchantConfig FromOptions(IDealConnectorOptions idealConnectorOptions)
         {
             MerchantConfig newMerchant = new MerchantConfig
             {
@@ -169,9 +144,7 @@ namespace iDealAdvancedConnector
 
             XmlSignature.XmlSignature.RegisterSignatureAlghorighm();
 
-            Connector.defaultMerchantConfig = newMerchant;
-
-            return Connector.defaultMerchantConfig;           
+            return newMerchant;           
         }
 
         static X509Certificate2 GetCertificateFromBase64String(string cert, string pwd = null)
