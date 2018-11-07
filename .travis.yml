@@ -12,6 +12,7 @@ services:
 
 before_script:
   - '[ "$TRAVIS_PULL_REQUEST" = "false" ] || [ -z "$TRAVIS_PULL_REQUEST" ] || git checkout -b pull/${TRAVIS_PULL_REQUEST}'
+  - '[ "$TRAVIS_TAG" = "false" ] || [ -z "$TRAVIS_TAG" ] || git checkout -b __TAG${TRAVIS_TAG}'
 
 script:
 - chmod +x build.sh && docker run -it --env-file <(env | grep -E "TRAVIS|NUGET") -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/src danielmunchcko/dotnet:2.1.402 ./build.sh -t "Deploy"
