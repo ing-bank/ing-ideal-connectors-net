@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Opensource tools and API to connect webshops and merchants to ING using iDeal</Description>
-    <PackageLicenseUrl>https://github.com/ckolabs/ing-ideal-connectors-net/blob/master/license.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/ckolabs/ing-ideal-connectors-net/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ckolabs/ing-ideal-connectors-net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/ckolabs/ing-ideal-connectors-net</PackageProjectUrl>
     <Authors>ING Group; Checkout.com</Authors>
