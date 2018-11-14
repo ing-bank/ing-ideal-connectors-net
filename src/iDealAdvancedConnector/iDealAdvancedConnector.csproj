@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Opensource tools and API to connect webshops and merchants to ING using iDeal</Description>
+    <PackageLicenseUrl>https://github.com/ckolabs/ing-ideal-connectors-net/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ckolabs/ing-ideal-connectors-net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ckolabs/ing-ideal-connectors-net</PackageProjectUrl>
+    <Authors>ING Group; Checkout.com</Authors>
+    <Owners>ING Group; Checkout.com</Owners>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messages\itt-acq.xsd" />
+    <EmbeddedResource Include="Messages\xmldsigcore-schema.xsd" />
+</ItemGroup>
+</Project>

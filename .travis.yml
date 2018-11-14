@@ -1,0 +1,33 @@
+sudo: required
+language: false
+services:
+- docker
+
+
+# For pull requests (merge) GitVersion errors with the error:
+# It looks like the branch being examined is a detached Head pointing to commit '90769ab'. 
+# Without a proper branch name GitVersion cannot determine the build version.
+
+# As a workaround we set the branch name by checking out to /pull/$TRAVES_PULL_REQUEST
+
+before_script:
+  - '[ "$TRAVIS_PULL_REQUEST" = "false" ] || [ -z "$TRAVIS_PULL_REQUEST" ] || git checkout -b pull/${TRAVIS_PULL_REQUEST}'
+  - '[ "$TRAVIS_TAG" = "false" ] || [ -z "$TRAVIS_TAG" ] || git checkout -b __TAG${TRAVIS_TAG}'
+
+script:
+- chmod +x build.sh && docker run -it --env-file <(env | grep -E "TRAVIS|NUGET") -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/src danielmunchcko/dotnet:2.1.402 ./build.sh -t "Deploy"
+
+# Travis always does a shallow clone by default limited to 50 commits which breaks GitVersion
+git:
+  depth: false
+notifications:
+  slack:
+    secure: "yfhiW+Tw9moeEXug2LPEmbLVFqVLhesHWSW6/hCH27wQ/6/BzICVr75egIKz7Ybwlqb+6AcOZwVJoeoSC0FD7dkxgKTCoXpa1bv2L/yQgk4caVuq7wl+4F6CTWdYuEBnFqCpu0havD2RNuVB17fKv0znoP3lOJoNZCFBaHeCZ7jW05uGK4wWdqYVn5o+XkERs0BDoPK5DF817Y0pNL4D0qJmjN01Iibkda9eu4cN2TxPCh5c0nGCBkervVL6r663aj6lSoB7SX3aq3GsswcCn5mCIxg9dn5o1OJOt4rJu7Dh1TBDpZTriVPWAazhTd/hMHUpYjN4K62eOxS1SQCNA5pD6rCOx+iizhDOmm/GAPK822qMZzeYZW3rY+jXmRW/f9HWCIqNYur8whB5rI5KvPP/Y1jU2vyQxdWudamktxLZSg/mxOO7X8rg7KtNYkv34Sq7KhrGBrBEmoecvOUJhLilHY3cEfLqkxUnUCtRtCeLfOC1auFjxfk3ECiZL6b5w3lBCkHsoYN7Pibh31ejy6F6+cuaOiJl8M2dv0+cQlrNdfUT/jyRHqEfxL2+T23f9EUo0Yu2cEbvok/0cdbP2m+Jozeqn+sAil9/AePYdH4UA946WOOhy0K2qVTN8jEtzz05u2qDbFFR+7Zuo+Gnmq3dUsIYa88AWsRu0XeHzoc="
+    on_success: change
+    on_failure: always
+  email: false
+env:
+  # Environment variables - NUGET_API_KEY and NUGET_API_URL
+  global:
+  - secure: inmmK0IAuXVCstPC64w8WoqfWgqt8Caf8al0DyfahF2svWf9NvWjzk8OZB/V+sSIlpOsaHZpo+ww0WksSj5+aKVuZnfejuut2SI4eO3WZHcMZZefySDuhy0TM5MVghB1uMTiJC+gCkyMUvtmaawMx/Cp3UA67H4S8kWJ0+uJUWlRrkcKlThA3SEcaUJtni0yQ97mfgpwRyDKUQbV+Op8zYpkWP+mzQeHPRqCPpsTZllM2dFdcJ2c5wvDEt37630M+Gi91+Rbe9MIeAZXIRpi5K4oVkSdXFttw/eiCk8gXBt/SIxrzJwSo4spzFg1OaNOGcFIugfchbHfi8+1MEYCsTw8Gqt8N7VbrpISbY2kPfyea1Xigl8fq94U6NwaWd6REj8o+IPV0a83oCokwAsWuXYXkOupd/vZgr32Gi4eEKkzWUfUJjxFyu1B0fQZK2lfJtQ0LCHgux+DboSi2/HJQ+wR/BTZd9+nl9nr4/z4Djq6lkA7ZW5BbTAciZDA8QiecmUhTdcGq40aQZbAWki/Wr7QyR9tbyWlln14BN7t2uW/KW29MsHa6zaud5GRAFzKfMTB9PSRlkMo/fDL92c6CzEAJBplXhtnK/vW+4QBLldla9KwAFfPLGehw4HaUw5by/IhLHVzNv8nfIXEiXPbrh5IViSMDZzFUV2ciZnd+tc=
+  - secure: NiUz9GOXgpfEivTHX/G1b8Zg1/vo6IEYScV1Y2aR6jqxmBno5Go8WW8BrAzIfBJsvEaeZdKlxnLGo+m0RVUx0/DNrsyNQctNETY6H3ae5Btsq+AwVxW5Fezr+r/hyiNZdkklfyFczDQ9zC5xuAfCUMzN1w/HqIUu1WxGS1cQqyEKoQOOULyhpj80BJ5xcgRxxAt9CQjUPIwaeYSJvINvnNbW9+lmXR7plpma30p5TiiFNT6uvf5JngIkpvfgq/SSoXNA4HQXjc8KJ2Vp9bt7TFTgjFQjm4yHMU+RboFKbOyuMAC7pEBNAhFjKoB40id+0SwHp9D8d9gU+vE2njO2kEZYVxBiyc0chQoariRdNJfOTw5RpxI6SdJdy7Vfhjgon1a8vd0uqibsj1o9RFVFfslkEeQETeOwwOupu/QDfEsI20pM3pFO/axIElkXCZ/ppn00A/YrxDoYOf+gm5gs6bjmNfC+C17tv0z+87U3fFgsB6Fj471Q85YYkghXgWeUbRiLUYp2Ye9pNIJcgfUUe+dDIFZZ7o8uO4RVgXFS1SozVFHm4r4mfCdbIHjno/+XIvDM+xfRbR8a9y3yucP1lZ6IHn0hTOUB4dxTahJW8YpOXoGo8lpkJuapv+WEgg1/M5iidUIDwnsEmQOXvXbkrF5yK2NvQ7LJrYGbMpKOD20=
