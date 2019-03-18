@@ -62,11 +62,6 @@ namespace iDealAdvancedConnector
         public Uri acquirerUrlSTA;
 
         /// <summary>
-        /// The acquirer timeout
-        /// </summary>
-        public int acquirerTimeout;
-
-        /// <summary>
         /// The currency
         /// </summary>
         public string currency;
@@ -130,10 +125,6 @@ namespace iDealAdvancedConnector
                 if (!Uri.TryCreate(acquirerTransactionUrl, UriKind.Absolute, out newMerchant.acquirerUrlTRA)) throw new UriFormatException("AcquirerTransactionURL is not in correct format.");
                 if (!Uri.TryCreate(acquirerTransactionStatusUrl, UriKind.Absolute, out newMerchant.acquirerUrlSTA)) throw new UriFormatException("AcquirerTransactionStatusURL is not in correct format.");
             }
-
-            string acquirerTimeout = idealConnectorOptions.AcquirerTimeout;
-            if (!Int32.TryParse(acquirerTimeout, out newMerchant.acquirerTimeout))
-                throw new InvalidCastException("AcquirerTimeout is not in correct format.");
 
             newMerchant.ExpirationPeriod = !string.IsNullOrWhiteSpace(idealConnectorOptions.ExpirationPeriod)
                     ? idealConnectorOptions.ExpirationPeriod

@@ -19,6 +19,11 @@
         /// </summary>
         /// <value></value>
         public string AcquirerCertificate { get; set; }
+
+        /// <summary>
+        /// Acquirer timeout in seconds
+        /// </summary>
+        /// <value></value>
         public string AcquirerTimeout { get; set; }
         public string MerchantId { get; set; }
         public string SubId { get; set; }
