@@ -19,6 +19,12 @@
         /// </summary>
         /// <value></value>
         public string AcquirerCertificate { get; set; }
+
+        /// <summary>
+        /// Acquirer timeout in seconds. Note that this isn't handled automatically by this library
+        /// A user of the connector has to configure the passed in HttpClient with that value himself
+        /// </summary>
+        /// <value></value>
         public string AcquirerTimeout { get; set; }
         public string MerchantId { get; set; }
         public string SubId { get; set; }
