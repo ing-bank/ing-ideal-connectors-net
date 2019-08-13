@@ -79,15 +79,20 @@ namespace iDealAdvancedConnector
         /// <returns>Xml Serializer for the object type.</returns>
         private static XmlSerializer GetSerializer<T>()
         {
-            XmlSerializer serializer = serializers[typeof(T).Name] as XmlSerializer;
+            return serializers[typeof(T).Name] as XmlSerializer ?? CreateAndRegisterSerializer<T>();
+        }
 
-            if (serializer == null)
+        private static XmlSerializer CreateAndRegisterSerializer<T>()
+        {
+            lock (thisLock)
             {
-                serializer = new XmlSerializer(typeof(T));
-                serializers.Add(typeof(T).Name, serializer);
+                if (!serializers.ContainsKey(typeof(T).Name))
+                {
+                    serializers.Add(typeof(T).Name, new XmlSerializer(typeof(T)));
+                }
             }
-            return serializer;
 
+            return (XmlSerializer)serializers[typeof(T).Name];
         }
 
 
