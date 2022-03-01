@@ -97,12 +97,6 @@ namespace ING.iDealAdvanced.XmlSignature
             // Append the element to the XML document.
             doc.DocumentElement.AppendChild(doc.ImportNode(xmlSignature, true));
 
-            //xmlSignature.Prefix = "ds";
-            if (doc.FirstChild is XmlDeclaration)
-            {
-                doc.RemoveChild(doc.FirstChild);
-            }
-
             string xml = doc.OuterXml;
 
             //replace KeyValue with KeyName containing the fingerprint of the signing certificate
